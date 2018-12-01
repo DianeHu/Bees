@@ -1,6 +1,6 @@
 ---
 title: "BeeProject"
-author: "Diane Hu"
+author: "Diane Hu, Ashka Stephen, Jarod Cahoon"
 date: "November 30, 2018"
 output: html_document
 ---
@@ -9,22 +9,14 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+Yieldpercol ~ all pesticide types (not including nallNeonic) + year + state, and numcol ~ same values
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+1. oslr this
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+2. Do model without any of the pesticides, do a model with, anova
 
-```{r cars}
-summary(cars)
-```
+3. anova tests for all baseline models against models with one pesticide type included
 
-## Including Plots
+4. interactions for all pesticide types between each other (anova this)
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+5. square and log transformations
