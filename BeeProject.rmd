@@ -21,6 +21,7 @@ library("cowplot")
 
 ```{r}
 honey <- read.csv("vHoneyNeonic_v02.csv")
+
 honey <- na.omit(honey)
 glimpse(honey)
 ```
@@ -104,8 +105,10 @@ ndLTHIAC
 
 ```{r}
 cal <- honey %>% filter(StateName == "California")
-cal <- cal %>% mutate(logCloth = log(nCLOTHIANIDIN), logIMID = log(nIMIDACLOPRID), logTHIAM = log(nTHIAMETHOXAM),
-                                      logACET = log(nACETAMIPRID), logTHIAC = log(nTHIACLOPRID))
+
+cal = na.omit(cal)
+
+glimpse(cal)
 ```
 
 ```{r}
@@ -126,6 +129,39 @@ cLACET
 cLTHIAC
 ```
 
+# Model
+
+```{r}
+glimpse(honeySample)
+```
+
+```{r}
+honeySample$logCloth[which(!is.finite(honeySample$logCloth))] = NA
+honeySample$logIMID[which(!is.finite(honeySample$logIMID))] = NA
+honeySample$logTHIAM[which(!is.finite(honeySample$logTHIAM))] = NA
+honeySample$logACET[which(!is.finite(honeySample$logACET))] = NA
+honeySample$logTHIAC[which(!is.finite(honeySample$logTHIAC))] = NA
+
+honeySample <- na.omit(honeySample)
+
+numcolFull <- lm(numcol ~ Region + logCloth + logIMID + logTHIAM + logACET + logTHIAC,data=honeySample)
+kable(tidy(numcolFull))
+```
+
+```{r}
+library(olsrr)
+reduced <- ols_step_forward_aic(numcolFull)
+```
+
+```{r}
+baseModel <- lm(numcol ~ Region + logTHIAC + logTHIAM + logCloth, data=honeySample)
+interactionsModel <- lm(numcol ~ Region + logTHIAC + logTHIAM + logCloth + Region*logCloth + Region*logTHIAM + Region*logTHIAC, data=honeySample)
+kable(anova(baseModel, interactionsModel), format="html")
+```
+
+```{r}
+
+```
 
 ?? Do we need to standardize year?
 
