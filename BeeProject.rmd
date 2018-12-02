@@ -61,24 +61,73 @@ ncRegion
 # Transformations
 
 honeySample <- honeySample %>% mutate(logCloth = log(nCLOTHIANIDIN), logIMID = log(nIMIDACLOPRID), logTHIAM = log(nTHIAMETHOXAM),
-                                      logACET = log(ACET), logTHIAC = log(nTHIACLOPRID))
+                                      logACET = log(nACETAMIPRID), logTHIAC = log(nTHIACLOPRID))
 
-ncLCloth <- ggplot(honeySample, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nCLOTHIANIDIN")
-ncLIMID <- ggplot(honeySample, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nIMIDACLOPRID")
-ncLTHIAM <- ggplot(honeySample, aes(x = logTHIAM, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIAMETHOXAM")
-ncLACET <- ggplot(honeySample, aes(x = logACET, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nACETAMIPRID")
-ncLTHIAC <- ggplot(honeySample, aes(x = logTHIAC, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIACLOPRID")
+ncLCloth <- ggplot(honeySample, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nCLOTHIANIDIN")
+ncLIMID <- ggplot(honeySample, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nIMIDACLOPRID")
+ncLTHIAM <- ggplot(honeySample, aes(x = logTHIAM, y = numcol)) + geom_point() + ggtitle("Number of Colonies Log vs nTHIAMETHOXAM")
+ncLACET <- ggplot(honeySample, aes(x = logACET, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nACETAMIPRID")
+ncLTHIAC <- ggplot(honeySample, aes(x = logTHIAC, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nTHIACLOPRID")
 ```
 
 ```{r}
-ncYear
-ncCloth
-ncIMID
-ncTHIAM
-ncACET
-ncTHIAC
-ncRegion
+ncLCloth
+ncLIMID
+ncLTHIAM
+ncLACET
+ncLTHIAC
 ```
+
+```{r}
+nd <- honey %>% filter(StateName == "North Dakota")
+nd <- nd %>% mutate(logCloth = log(nCLOTHIANIDIN), logIMID = log(nIMIDACLOPRID), logTHIAM = log(nTHIAMETHOXAM),
+                                      logACET = log(nACETAMIPRID), logTHIAC = log(nTHIACLOPRID))
+```
+
+```{r}
+ndYear <- ggplot(nd, aes(x = year, y = numcol)) + geom_point() + geom_line() + ggtitle("Number of ND Colonies vs Year")
+ndLCloth <- ggplot(nd, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of ND Colonies vs Log nCLOTHIANIDIN")
+ndLIMID <- ggplot(nd, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of ND Colonies vs Log nIMIDACLOPRID")
+ndLTHIAM <- ggplot(nd, aes(x = logTHIAM, y = numcol)) + geom_point() + ggtitle("Number of ND Colonies Log vs nTHIAMETHOXAM")
+ndLACET <- ggplot(nd, aes(x = logACET, y = numcol)) + geom_point() + ggtitle("Number of ND Colonies vs Log nACETAMIPRID")
+ndLTHIAC <- ggplot(nd, aes(x = logTHIAC, y = numcol)) + geom_point() + ggtitle("Number of ND Colonies vs Log nTHIACLOPRID")
+```
+
+```{r}
+ndYear
+ndLCloth
+ndLIMID
+ndLTHIAM
+ndLACET
+ndLTHIAC
+```
+
+```{r}
+cal <- honey %>% filter(StateName == "California")
+cal <- cal %>% mutate(logCloth = log(nCLOTHIANIDIN), logIMID = log(nIMIDACLOPRID), logTHIAM = log(nTHIAMETHOXAM),
+                                      logACET = log(nACETAMIPRID), logTHIAC = log(nTHIACLOPRID))
+```
+
+```{r}
+cYear <- ggplot(cal, aes(x = year, y = numcol)) + geom_point() + geom_line() + ggtitle("Number of California Colonies vs Year")
+cLCloth <- ggplot(cal, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs Log nCLOTHIANIDIN")
+cLIMID <- ggplot(cal, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs Log nIMIDACLOPRID")
+cLTHIAM <- ggplot(cal, aes(x = logTHIAM, y = numcol)) + geom_point() + ggtitle("Number of California Colonies Log vs nTHIAMETHOXAM")
+cLACET <- ggplot(cal, aes(x = logACET, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs Log nACETAMIPRID")
+cLTHIAC <- ggplot(cal, aes(x = logTHIAC, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs Log nTHIACLOPRID")
+```
+
+```{r}
+cYear
+cLCloth
+cLIMID
+cLTHIAM
+cLACET
+cLTHIAC
+```
+
+
+?? Do we need to standardize year?
 
 Yieldpercol ~ all pesticide types (not including nallNeonic) + year + state, and numcol ~ same values
 
