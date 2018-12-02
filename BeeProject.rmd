@@ -9,22 +9,114 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r, include=FALSE}
+library("dplyr")
+library("ggplot2")
+library("broom")
+library("knitr")
+library("cowplot")
+library("readr")
+library("arm")
 ```
 
-## Including Plots
+## Exploratory Data
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+# intial
+vHoneyNeonic_v02 <- read_csv("vHoneyNeonic_v02.csv")
+summary(vHoneyNeonic_v02)
+glimpse(vHoneyNeonic_v02)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Data Clean Up:
+```{r}
+# need to sample 25% of data so let us sample 200 points
+set.seed(7)
+num <- summarize(vHoneyNeonic_v02,n = n())
+
+vHoneyNeonic_v02 <- na.omit(vHoneyNeonic_v02)
+honey <- sample_n(vHoneyNeonic_v02, as.integer(num*.25))
+honey
+```
+
+Y                   X
+yield per colony  pestiside, year, state
+num of col
+
+
+## Graphs for yield per colony
+```{r}
+yc_nACETAMIPRID <- ggplot(honey, aes(x=nACETAMIPRID, y=yieldpercol)) + geom_point() + 
+  ggtitle("Yield per Colony v. nACETAMIPRID")
+yc_nCLOTHIANIDIN <- ggplot(honey, aes(x=nCLOTHIANIDIN, y=yieldpercol)) + geom_point() +  
+  ggtitle("Yield per Colony v. nCLOTHIANIDIN")
+yc_nIMIDACLOPRID <- ggplot(honey, aes(x=nIMIDACLOPRID, y=yieldpercol)) + geom_point() + 
+  ggtitle("Yield per Colony v. nIMIDACLOPRID")
+yc_nTHIACLOPRID <- ggplot(honey, aes(x=nTHIACLOPRID, y=yieldpercol))  + geom_point() + 
+  ggtitle("Yield per Colony v. nTHIACLOPRID")
+yc_nTHIAMETHOXAM <- ggplot(honey, aes(x=nTHIAMETHOXAM, y=yieldpercol)) + geom_point() + 
+  ggtitle("Yield per Colony v. nTHIAMETHOXAM")
+yc_year <- ggplot(honey, aes(x=year, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. Year")
+yc_reigon <- ggplot(honey, aes(x=Region, y=yieldpercol)) + geom_boxplot() + ggtitle("Yield per Colony v. Region")
+
+
+#show plots
+yc_nACETAMIPRID
+yc_nCLOTHIANIDIN
+yc_nIMIDACLOPRID
+yc_nTHIACLOPRID
+yc_nTHIAMETHOXAM
+yc_year
+yc_reigon
+```
+
+Log the variables:
+```{r}
+#transform and add
+honey <- honey %>% mutate(lognACETAMIPRID = log(nACETAMIPRID), lognCLOTHIANIDIN = log(nCLOTHIANIDIN), lognIMIDACLOPRID = log(nIMIDACLOPRID), lognTHIACLOPRID = log(nTHIACLOPRID),lognTHIAMETHOXAM =log(nTHIAMETHOXAM) )
+```
+
+```{r}
+yc_lognACETAMIPRID <- ggplot(honey, aes(x=lognACETAMIPRID, y=yieldpercol)) + geom_point() +ggtitle("Yield per Colony v. lognACETAMIPRID")
+yc_lognCLOTHIANIDIN <- ggplot(honey, aes(x=lognCLOTHIANIDIN, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. lognCLOTHIANIDIN")
+yc_lognIMIDACLOPRID <- ggplot(honey, aes(x=lognIMIDACLOPRID, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. lognIMIDACLOPRID")
+yc_lognTHIACLOPRID <- ggplot(honey, aes(x=lognTHIACLOPRID, y=yieldpercol))  + geom_point() + ggtitle("Yield per Colony v. lognTHIACLOPRID")
+yc_lognTHIAMETHOXAM <- ggplot(honey, aes(x=lognTHIAMETHOXAM, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. lognTHIAMETHOXAM")
+
+#show plots
+yc_lognACETAMIPRID
+yc_lognCLOTHIANIDIN
+yc_lognIMIDACLOPRID
+yc_lognTHIACLOPRID
+yc_lognTHIAMETHOXAM
+```
+
+CA:
+
+```{r}
+ca <- vHoneyNeonic_v02 %>% filter(StateName == "California")
+ca <- na.omit(ca)
+
+ca <- ca %>% mutate(lognACETAMIPRID = log(nACETAMIPRID), lognCLOTHIANIDIN = log(nCLOTHIANIDIN), lognIMIDACLOPRID = log(nIMIDACLOPRID), lognTHIACLOPRID = log(nTHIACLOPRID),lognTHIAMETHOXAM =log(nTHIAMETHOXAM) )
+ca
+```
+
+```{r}
+ycca_lognACETAMIPRID <- ggplot(ca, aes(x=lognACETAMIPRID, y=yieldpercol)) + geom_point() +ggtitle("CA: Yield per Colony v. lognACETAMIPRID")
+ycca_lognCLOTHIANIDIN <- ggplot(ca, aes(x=lognCLOTHIANIDIN, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. lognCLOTHIANIDIN")
+ycca_lognIMIDACLOPRID <- ggplot(ca, aes(x=lognIMIDACLOPRID, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. lognIMIDACLOPRID")
+ycca_lognTHIACLOPRID <- ggplot(ca, aes(x=lognTHIACLOPRID, y=yieldpercol))  + geom_point() + ggtitle("CA: Yield per Colony v. lognTHIACLOPRID")
+ycca_lognTHIAMETHOXAM <- ggplot(ca, aes(x=lognTHIAMETHOXAM, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. lognTHIAMETHOXAM")
+ycca_year <- ggplot(ca, aes(x=year, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. Year")
+```
+
+```{r}
+#show plots
+ycca_lognACETAMIPRID
+ycca_lognCLOTHIANIDIN
+ycca_lognIMIDACLOPRID
+ycca_lognTHIACLOPRID
+ycca_lognTHIAMETHOXAM
+ycca_lognTHIAMETHOXAM
+ycca_year
+```
