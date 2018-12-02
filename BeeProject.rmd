@@ -33,6 +33,17 @@ numObs <- summarize(honey, n = n())
 
 honeySample <- sample_n(honey, as.integer(0.25*numObs))
 
+honeySample <- honeySample %>% mutate(logCloth = log(nCLOTHIANIDIN), logIMID = log(nIMIDACLOPRID), logTHIAM = log(nTHIAMETHOXAM),
+                                      logACET = log(nACETAMIPRID), logTHIAC = log(nTHIACLOPRID))
+
+honeySample$logCloth[which(!is.finite(honeySample$logCloth))] = NA
+honeySample$logIMID[which(!is.finite(honeySample$logIMID))] = NA
+honeySample$logTHIAM[which(!is.finite(honeySample$logTHIAM))] = NA
+honeySample$logACET[which(!is.finite(honeySample$logACET))] = NA
+honeySample$logTHIAC[which(!is.finite(honeySample$logTHIAC))] = NA
+
+honeySample <- na.omit(honeySample)
+
 glimpse(honeySample)
 ```
 
@@ -61,9 +72,6 @@ ncRegion
 ```{r}
 # Transformations
 
-honeySample <- honeySample %>% mutate(logCloth = log(nCLOTHIANIDIN), logIMID = log(nIMIDACLOPRID), logTHIAM = log(nTHIAMETHOXAM),
-                                      logACET = log(nACETAMIPRID), logTHIAC = log(nTHIACLOPRID))
-
 ncLCloth <- ggplot(honeySample, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nCLOTHIANIDIN")
 ncLIMID <- ggplot(honeySample, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nIMIDACLOPRID")
 ncLTHIAM <- ggplot(honeySample, aes(x = logTHIAM, y = numcol)) + geom_point() + ggtitle("Number of Colonies Log vs nTHIAMETHOXAM")
@@ -80,30 +88,6 @@ ncLTHIAC
 ```
 
 ```{r}
-nd <- honey %>% filter(StateName == "North Dakota")
-nd <- nd %>% mutate(logCloth = log(nCLOTHIANIDIN), logIMID = log(nIMIDACLOPRID), logTHIAM = log(nTHIAMETHOXAM),
-                                      logACET = log(nACETAMIPRID), logTHIAC = log(nTHIACLOPRID))
-```
-
-```{r}
-ndYear <- ggplot(nd, aes(x = year, y = numcol)) + geom_point() + geom_line() + ggtitle("Number of ND Colonies vs Year")
-ndLCloth <- ggplot(nd, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of ND Colonies vs Log nCLOTHIANIDIN")
-ndLIMID <- ggplot(nd, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of ND Colonies vs Log nIMIDACLOPRID")
-ndLTHIAM <- ggplot(nd, aes(x = logTHIAM, y = numcol)) + geom_point() + ggtitle("Number of ND Colonies Log vs nTHIAMETHOXAM")
-ndLACET <- ggplot(nd, aes(x = logACET, y = numcol)) + geom_point() + ggtitle("Number of ND Colonies vs Log nACETAMIPRID")
-ndLTHIAC <- ggplot(nd, aes(x = logTHIAC, y = numcol)) + geom_point() + ggtitle("Number of ND Colonies vs Log nTHIACLOPRID")
-```
-
-```{r}
-ndYear
-ndLCloth
-ndLIMID
-ndLTHIAM
-ndLACET
-ndLTHIAC
-```
-
-```{r}
 cal <- honey %>% filter(StateName == "California")
 
 cal = na.omit(cal)
@@ -113,11 +97,11 @@ glimpse(cal)
 
 ```{r}
 cYear <- ggplot(cal, aes(x = year, y = numcol)) + geom_point() + geom_line() + ggtitle("Number of California Colonies vs Year")
-cLCloth <- ggplot(cal, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs Log nCLOTHIANIDIN")
-cLIMID <- ggplot(cal, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs Log nIMIDACLOPRID")
-cLTHIAM <- ggplot(cal, aes(x = logTHIAM, y = numcol)) + geom_point() + ggtitle("Number of California Colonies Log vs nTHIAMETHOXAM")
-cLACET <- ggplot(cal, aes(x = logACET, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs Log nACETAMIPRID")
-cLTHIAC <- ggplot(cal, aes(x = logTHIAC, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs Log nTHIACLOPRID")
+cLCloth <- ggplot(cal, aes(x = nCLOTHIANIDIN, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nCLOTHIANIDIN")
+cLIMID <- ggplot(cal, aes(x = nIMIDACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nIMIDACLOPRID")
+cLTHIAM <- ggplot(cal, aes(x = nTHIAMETHOXAM, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nTHIAMETHOXAM")
+cLACET <- ggplot(cal, aes(x = nACETAMIPRID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nACETAMIPRID")
+cLTHIAC <- ggplot(cal, aes(x = nTHIACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nTHIACLOPRID")
 ```
 
 ```{r}
@@ -136,31 +120,175 @@ glimpse(honeySample)
 ```
 
 ```{r}
-honeySample$logCloth[which(!is.finite(honeySample$logCloth))] = NA
-honeySample$logIMID[which(!is.finite(honeySample$logIMID))] = NA
-honeySample$logTHIAM[which(!is.finite(honeySample$logTHIAM))] = NA
-honeySample$logACET[which(!is.finite(honeySample$logACET))] = NA
-honeySample$logTHIAC[which(!is.finite(honeySample$logTHIAC))] = NA
-
-honeySample <- na.omit(honeySample)
-
 numcolFull <- lm(numcol ~ Region + logCloth + logIMID + logTHIAM + logACET + logTHIAC,data=honeySample)
 kable(tidy(numcolFull))
 ```
 
 ```{r}
 library(olsrr)
-reduced <- ols_step_forward_aic(numcolFull)
+ols_step_forward_aic(numcolFull)
 ```
 
 ```{r}
 baseModel <- lm(numcol ~ Region + logTHIAC + logTHIAM + logCloth, data=honeySample)
 interactionsModel <- lm(numcol ~ Region + logTHIAC + logTHIAM + logCloth + Region*logCloth + Region*logTHIAM + Region*logTHIAC, data=honeySample)
-kable(anova(baseModel, interactionsModel), format="html")
+kable(anova(baseModel, interactionsModel), format="html") # no significant interactions
 ```
 
 ```{r}
+glimpse(cal)
+```
 
+
+```{r}
+calFullModel <- lm(numcol ~ year + nCLOTHIANIDIN + nIMIDACLOPRID + nTHIAMETHOXAM + nACETAMIPRID + nTHIACLOPRID, data=cal)
+kable(tidy(calFullModel))
+```
+
+```{r}
+ols_step_forward_aic(calFullModel)
+```
+
+```{r}
+pacf(cal$nTHIACLOPRID)
+pacf(cal$nCLOTHIANIDIN)
+```
+
+
+```{r}
+calBase <- lm(numcol ~ year + nTHIACLOPRID + nCLOTHIANIDIN, data=cal)
+calInter <- lm(numcol ~ year + nTHIACLOPRID + nCLOTHIANIDIN + year*nTHIACLOPRID + year*nCLOTHIANIDIN, data=cal)
+kable(anova(calBase, calInter), format="html") # interactions not significant
+```
+
+# Assumptions
+
+# Model 1
+```{r}
+honeySample <- honeySample %>% mutate(Residuals = resid(baseModel), Predicted = predict(baseModel))
+
+# Region + logTHIAC + logTHIAM + logCloth
+
+ggplot(data=honeySample,aes(x=Region,y=Residuals)) + geom_point() + 
+  geom_hline(yintercept=0,color="red") + 
+   labs(title="Residuals vs. Region") + 
+  theme(plot.title = element_text(hjust=0.5))
+
+ggplot(data=honeySample,aes(x=logTHIAC,y=Residuals)) + geom_point() + 
+  geom_hline(yintercept=0,color="red") + 
+   labs(title="Residuals vs. logTHIAC") + 
+  theme(plot.title = element_text(hjust=0.5))
+
+ggplot(data=honeySample,aes(x=Predicted,y=Residuals)) + geom_point() + 
+  geom_hline(yintercept=0,color="red") + 
+   labs(title="Residuals vs. Predicted") + 
+  theme(plot.title = element_text(hjust=0.5))
+
+ggplot(data=honeySample,aes(x=logTHIAM,y=Residuals)) + geom_point() + 
+  geom_hline(yintercept=0,color="red") + 
+   labs(title="Residuals vs. logTHIAM") + 
+  theme(plot.title = element_text(hjust=0.5))
+
+ggplot(data=honeySample,aes(x=logCloth,y=Residuals)) + geom_point() + 
+  geom_hline(yintercept=0,color="red") + 
+   labs(title="Residuals vs. logCloth") + 
+  theme(plot.title = element_text(hjust=0.5))
+
+ggplot(data=honeySample, aes(sample=Residuals)) + stat_qq() + stat_qq_line() + 
+  ggtitle("QQ Plot for Residuals")
+```
+
+
+```{r}
+honeySample <- honeySample %>%
+  mutate(leverage = hatvalues(baseModel), 
+         cooks = cooks.distance(baseModel),
+         stand.resid = rstandard(baseModel), 
+         obs.num = row_number())
+
+ggplot(data=honeySample, aes(x=obs.num,y=leverage)) + 
+  geom_point(alpha=0.5) + 
+  geom_hline(yintercept=0.1,color="red")+
+  labs(x="Observation Number",y="Leverage",title="Leverage")
+```
+
+```{r}
+ggplot(data=honeySample, aes(x=obs.num,y=cooks)) + 
+  geom_point() + 
+  geom_hline(yintercept=1,color="red")+
+  labs(x="Observation Number",y="Cook's Distance",title="Cook's Distance")
+```
+
+```{r}
+library(car)
+kable(tidy(vif(baseModel)))
+```
+
+```{r}
+kable(glance(baseModel))
+```
+
+# Model 2
+
+```{r}
+# calBase <- lm(numcol ~ year + nTHIACLOPRID + nCLOTHIANIDIN, data=cal)
+cal <- cal %>% mutate(Residuals = resid(calBase), Predicted = predict(calBase))
+
+
+ggplot(data=cal,aes(x=year,y=Residuals)) + geom_point() + 
+  geom_hline(yintercept=0,color="red") + 
+   labs(title="Residuals vs. Year") + 
+  theme(plot.title = element_text(hjust=0.5))
+
+ggplot(data=cal,aes(x=nTHIACLOPRID,y=Residuals)) + geom_point() + 
+  geom_hline(yintercept=0,color="red") + 
+   labs(title="Residuals vs. nTHIACLOPRID") + 
+  theme(plot.title = element_text(hjust=0.5))
+
+ggplot(data=cal,aes(x=nCLOTHIANIDIN,y=Residuals)) + geom_point() + 
+  geom_hline(yintercept=0,color="red") + 
+   labs(title="Residuals vs. nCLOTHIANIDIN") + 
+  theme(plot.title = element_text(hjust=0.5))
+
+ggplot(data=cal,aes(x=Predicted,y=Residuals)) + geom_point() + 
+  geom_hline(yintercept=0,color="red") + 
+   labs(title="Residuals vs. Predicted") + 
+  theme(plot.title = element_text(hjust=0.5))
+
+ggplot(data=honeySample, aes(sample=Residuals)) + stat_qq() + stat_qq_line() + 
+  ggtitle("QQ Plot for Residuals")
+```
+
+```{r}
+cal <- cal %>%
+  mutate(leverage = hatvalues(calBase), 
+         cooks = cooks.distance(calBase),
+         stand.resid = rstandard(calBase), 
+         obs.num = row_number())
+
+ggplot(data=cal, aes(x=obs.num,y=leverage)) + 
+  geom_point(alpha=0.5) + 
+  geom_hline(yintercept=0.1,color="red")+
+  labs(x="Observation Number",y="Leverage",title="Leverage")
+```
+
+```{r}
+ggplot(data=cal, aes(x=obs.num,y=cooks)) + 
+  geom_point() + 
+  geom_hline(yintercept=1,color="red")+
+  labs(x="Observation Number",y="Cook's Distance",title="Cook's Distance")
+```
+
+```{r}
+kable(tidy(vif(calBase)))
+```
+
+```{r}
+kable(glance(calBase))
+```
+
+```{r}
+ggplot(data=honey, aes(x=year, y=nAllNeonic)) + geom_point()
 ```
 
 ?? Do we need to standardize year?
