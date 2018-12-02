@@ -17,6 +17,8 @@ library("knitr")
 library("cowplot")
 library("readr")
 library("arm")
+library("olsrr")
+library("car")
 ```
 
 ## Exploratory Data
@@ -31,17 +33,29 @@ glimpse(vHoneyNeonic_v02)
 Data Clean Up:
 ```{r}
 # need to sample 25% of data so let us sample 200 points
+vHoneyNeonic_v02 <- na.omit(vHoneyNeonic_v02)
 set.seed(7)
 num <- summarize(vHoneyNeonic_v02,n = n())
-
-vHoneyNeonic_v02 <- na.omit(vHoneyNeonic_v02)
 honey <- sample_n(vHoneyNeonic_v02, as.integer(num*.25))
-honey
 ```
 
-Y                   X
-yield per colony  pestiside, year, state
-num of col
+Log the variables:
+```{r}
+#transform and add
+honey <- honey %>% mutate(lognACETAMIPRID = log(nACETAMIPRID), lognCLOTHIANIDIN = log(nCLOTHIANIDIN), lognIMIDACLOPRID = log(nIMIDACLOPRID), lognTHIACLOPRID = log(nTHIACLOPRID),lognTHIAMETHOXAM =log(nTHIAMETHOXAM) )
+
+# remove NA items
+honey$lognACETAMIPRID[which(!is.finite(honey$lognACETAMIPRID))] = NA
+honey$lognCLOTHIANIDIN[which(!is.finite(honey$lognCLOTHIANIDIN))] = NA
+honey$lognIMIDACLOPRID[which(!is.finite(honey$lognIMIDACLOPRID))] = NA
+honey$lognTHIACLOPRID[which(!is.finite(honey$lognTHIACLOPRID))] = NA
+honey$lognTHIAMETHOXAM[which(!is.finite(honey$lognTHIAMETHOXAM))] = NA
+
+honey <- na.omit(honey)
+
+honey
+
+```
 
 
 ## Graphs for yield per colony
@@ -59,7 +73,6 @@ yc_nTHIAMETHOXAM <- ggplot(honey, aes(x=nTHIAMETHOXAM, y=yieldpercol)) + geom_po
 yc_year <- ggplot(honey, aes(x=year, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. Year")
 yc_reigon <- ggplot(honey, aes(x=Region, y=yieldpercol)) + geom_boxplot() + ggtitle("Yield per Colony v. Region")
 
-
 #show plots
 yc_nACETAMIPRID
 yc_nCLOTHIANIDIN
@@ -70,11 +83,6 @@ yc_year
 yc_reigon
 ```
 
-Log the variables:
-```{r}
-#transform and add
-honey <- honey %>% mutate(lognACETAMIPRID = log(nACETAMIPRID), lognCLOTHIANIDIN = log(nCLOTHIANIDIN), lognIMIDACLOPRID = log(nIMIDACLOPRID), lognTHIACLOPRID = log(nTHIACLOPRID),lognTHIAMETHOXAM =log(nTHIAMETHOXAM) )
-```
 
 ```{r}
 yc_lognACETAMIPRID <- ggplot(honey, aes(x=lognACETAMIPRID, y=yieldpercol)) + geom_point() +ggtitle("Yield per Colony v. lognACETAMIPRID")
@@ -92,31 +100,204 @@ yc_lognTHIAMETHOXAM
 ```
 
 CA:
-
 ```{r}
 ca <- vHoneyNeonic_v02 %>% filter(StateName == "California")
 ca <- na.omit(ca)
 
-ca <- ca %>% mutate(lognACETAMIPRID = log(nACETAMIPRID), lognCLOTHIANIDIN = log(nCLOTHIANIDIN), lognIMIDACLOPRID = log(nIMIDACLOPRID), lognTHIACLOPRID = log(nTHIACLOPRID),lognTHIAMETHOXAM =log(nTHIAMETHOXAM) )
-ca
+# we decide to not to imove forward with the logged data since removing the infinite values will result in very little observations
 ```
 
 ```{r}
-ycca_lognACETAMIPRID <- ggplot(ca, aes(x=lognACETAMIPRID, y=yieldpercol)) + geom_point() +ggtitle("CA: Yield per Colony v. lognACETAMIPRID")
-ycca_lognCLOTHIANIDIN <- ggplot(ca, aes(x=lognCLOTHIANIDIN, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. lognCLOTHIANIDIN")
-ycca_lognIMIDACLOPRID <- ggplot(ca, aes(x=lognIMIDACLOPRID, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. lognIMIDACLOPRID")
-ycca_lognTHIACLOPRID <- ggplot(ca, aes(x=lognTHIACLOPRID, y=yieldpercol))  + geom_point() + ggtitle("CA: Yield per Colony v. lognTHIACLOPRID")
-ycca_lognTHIAMETHOXAM <- ggplot(ca, aes(x=lognTHIAMETHOXAM, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. lognTHIAMETHOXAM")
+ycca_nACETAMIPRID <- ggplot(ca, aes(x=nACETAMIPRID, y=yieldpercol)) + geom_point() +ggtitle("CA: Yield per Colony v. nACETAMIPRID")
+ycca_nCLOTHIANIDIN <- ggplot(ca, aes(x=nCLOTHIANIDIN, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. nCLOTHIANIDIN")
+ycca_nIMIDACLOPRID <- ggplot(ca, aes(x=nIMIDACLOPRID, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. nIMIDACLOPRID")
+ycca_nTHIACLOPRID <- ggplot(ca, aes(x=nTHIACLOPRID, y=yieldpercol))  + geom_point() + ggtitle("CA: Yield per Colony v. nTHIACLOPRID")
+ycca_nTHIAMETHOXAM <- ggplot(ca, aes(x=nTHIAMETHOXAM, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. nTHIAMETHOXAM")
 ycca_year <- ggplot(ca, aes(x=year, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. Year")
 ```
 
 ```{r}
 #show plots
-ycca_lognACETAMIPRID
-ycca_lognCLOTHIANIDIN
-ycca_lognIMIDACLOPRID
-ycca_lognTHIACLOPRID
-ycca_lognTHIAMETHOXAM
-ycca_lognTHIAMETHOXAM
+ycca_nACETAMIPRID
+ycca_nCLOTHIANIDIN
+ycca_nIMIDACLOPRID
+ycca_nTHIACLOPRID
+ycca_nTHIAMETHOXAM
 ycca_year
+```
+
+## Model selection 
+make the model , do oslrr, trum down , make a model with baseline being the reigon and adding in each pesticeide as we go along.
+```{r}
+# first model 
+yclm_1 <- lm(yieldpercol ~ Region + lognACETAMIPRID + lognCLOTHIANIDIN + lognIMIDACLOPRID + lognTHIACLOPRID + lognTHIAMETHOXAM, data=honey)
+tidy(yclm_1)
+
+# second model
+yclm_2 <- lm(yieldpercol ~ year + nACETAMIPRID + nCLOTHIANIDIN + nIMIDACLOPRID + nTHIACLOPRID + nTHIAMETHOXAM, data=ca)
+tidy(yclm_2)
+```
+
+Oslrr:
+```{r}
+# first model 
+yclm_1 <- lm(yieldpercol ~ Region + lognACETAMIPRID + lognCLOTHIANIDIN + lognIMIDACLOPRID + lognTHIACLOPRID + lognTHIAMETHOXAM, data=honey)
+tidy(yclm_1)
+
+# second model
+yclm_2 <- lm(yieldpercol ~ year + nACETAMIPRID + nCLOTHIANIDIN + nIMIDACLOPRID + nTHIACLOPRID + nTHIAMETHOXAM, data=ca)
+tidy(yclm_2)
+```
+interactions of reigon again all pestideics for first model
+seconf interactions too
+ later: tidy(anova(model.orig,model.no.clarity))
+
+
+Oslrr:
+```{r}
+# first model 
+yclm_1 <- lm(yieldpercol ~ Region + lognACETAMIPRID + lognCLOTHIANIDIN + lognIMIDACLOPRID + lognTHIACLOPRID + lognTHIAMETHOXAM, data=honey)
+tidy(yclm_1)
+
+# second model
+yclm_2 <- lm(yieldpercol ~ year + nACETAMIPRID + nCLOTHIANIDIN + nIMIDACLOPRID + nTHIACLOPRID + nTHIAMETHOXAM, data=ca)
+tidy(yclm_2)
+```
+
+```{r}
+ols_step_forward_aic(yclm_1)
+ols_step_forward_aic(yclm_2)
+```
+
+
+```{r}
+# further models
+noInteraction.model <- lm(yieldpercol ~ Region + lognTHIACLOPRID + lognTHIAMETHOXAM, data=honey)
+tidy(noInteraction.model)
+
+# consider interactions
+interaction.model <- lm(yieldpercol ~ Region + lognTHIACLOPRID + lognTHIAMETHOXAM + (lognTHIACLOPRID*Region) + (lognTHIAMETHOXAM*Region), data=honey)
+tidy(interaction.model)
+```
+
+# assumption verification
+
+Are interactions important?
+```{r}
+anova(noInteraction.model,interaction.model)
+
+#confirm with the r sqaured 
+glance(noInteraction.model)$r.squared
+glance(interaction.model)$r.squared
+```
+P value is small, therefore second model is significant. Let us move forward with ineractions.
+
+```{r}
+honey <- honey %>% mutate(Residuals = resid(interaction.model))
+honey  <- honey %>% mutate(Predict = predict(interaction.model))
+
+
+#resid against explanatory
+ggplot(data=honey, aes(x=Region, y=Residuals)) + geom_point() + geom_hline(yintercept=0,color="red") +  labs(title="Residuals vs. Region") + theme(plot.title=element_text(hjust=0.5))
+
+ggplot(data=honey, aes(x=lognTHIACLOPRID, y=Residuals)) + geom_point() + geom_hline(yintercept=0,color="red") +  labs(title="Residuals vs. lognTHIACLOPRID") + theme(plot.title=element_text(hjust=0.5))
+
+ggplot(data=honey, aes(x=lognTHIAMETHOXAM, y=Residuals)) + geom_point() + geom_hline(yintercept=0,color="red") +  labs(title="Residuals vs. lognTHIAMETHOXAM") + theme(plot.title=element_text(hjust=0.5))
+
+#resid against explanatory
+ggplot(data=honey, aes(x=Predict, y=Residuals)) + geom_point() + geom_hline(yintercept=0,color="red") +  labs(title="Residuals vs. Predict") + theme(plot.title=element_text(hjust=0.5))
+
+```
+
+```{r}
+#check normality of residuals
+hist(honey$Residuals, main="Histogram of Residuals", xlab="residual") 
+ggplot(honey, aes(sample=Residuals))+ stat_qq()+ stat_qq_line() 
+```
+
+VIF
+```{r}
+kable(tidy(vif(interaction.model)))
+```
+
+Continue checking assumptions:
+```{r}
+honey <- honey %>% mutate(leverage = hatvalues(interaction.model),
+cooks = cooks.distance(interaction.model), 
+stand.resid = rstandard(interaction.model), 
+obs.num = row_number())
+
+#Leverage
+ggplot(data=honey, aes(x=obs.num,y=leverage)) + 
+geom_point(alpha=0.5) + 
+geom_hline(yintercept=0.1,color="red")+
+labs(x="Observation Number",y="Leverage",title="Leverage")
+
+#Cooks
+ggplot(data=honey, aes(x=obs.num,y=cooks)) + 
+geom_point() + 
+geom_hline(yintercept=1,color="red")+
+labs(x="Observation Number",y="Cook's Distance",title="Cook's Distance")
+
+# r sq
+glance(interaction.model)$r.squared
+glance(interaction.model)$adj.r.squared
+```
+
+
+
+
+
+
+
+
+
+Let us look at the second model for CA only (yclm_2):
+```{r}
+ca.model <- yclm_2 #rename
+ca <- ca %>% mutate(Residuals_2 = resid(ca.model))
+ca  <- ca %>% mutate(Predict_2 = predict(ca.model))
+
+
+#resid against explanatory
+ggplot(data=ca, aes(x=year, y=Residuals_2)) + geom_point() + geom_hline(yintercept=0,color="red") +  labs(title="Residuals vs. year") + theme(plot.title=element_text(hjust=0.5))
+
+#resid against explanatory
+ggplot(data=ca, aes(x=Predict_2, y=Residuals_2)) + geom_point() + geom_hline(yintercept=0,color="red") +  labs(title="Residuals vs. Predict_2") + theme(plot.title=element_text(hjust=0.5))
+
+```
+
+```{r}
+#check normality of residuals
+hist(ca$Residuals_2, main="Histogram of Residuals", xlab="residual") 
+ggplot(ca, aes(sample=Residuals_2))+ stat_qq()+ stat_qq_line() 
+```
+
+VIF
+```{r}
+kable(tidy(vif(ca.model)))
+```
+
+Continue checking assumptions:
+```{r}
+ca <- ca %>% mutate(leverage = hatvalues(ca.model),
+cooks = cooks.distance(ca.model), 
+stand.resid = rstandard(ca.model), 
+obs.num = row_number())
+
+#Leverage
+ggplot(data=ca, aes(x=obs.num,y=leverage)) + 
+geom_point(alpha=0.5) + 
+geom_hline(yintercept=0.1,color="red")+
+labs(x="Observation Number",y="Leverage",title="Leverage")
+
+#Cooks
+ggplot(data=ca, aes(x=obs.num,y=cooks)) + 
+geom_point() + 
+geom_hline(yintercept=1,color="red")+
+labs(x="Observation Number",y="Cook's Distance",title="Cook's Distance")
+
+# r sq
+glance(ca.model)$r.squared
+glance(ca.model)$adj.r.squared
 ```
