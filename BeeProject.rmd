@@ -5,8 +5,79 @@ date: "November 30, 2018"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, message=F,include=F}
 knitr::opts_chunk$set(echo = TRUE)
+options(knitr.kable.NA = '')
+```
+
+```{r,include=FALSE}
+library("tibble")
+library("dplyr")
+library("ggplot2")
+library("broom")
+library("knitr")
+library("cowplot")
+```
+
+```{r}
+honey <- read.csv("vHoneyNeonic_v02.csv")
+honey <- na.omit(honey)
+glimpse(honey)
+```
+
+```{r}
+set.seed(7)
+
+numObs <- summarize(honey, n = n())
+
+honeySample <- sample_n(honey, as.integer(0.25*numObs))
+
+glimpse(honeySample)
+```
+
+```{r}
+# Numcol against everything for exp data analysis
+
+ncYear <- ggplot(honeySample, aes(x = year, y = numcol)) + geom_point() + geom_line() + ggtitle("Number of Colonies vs Year")
+ncCloth <- ggplot(honeySample, aes(x = nCLOTHIANIDIN, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nCLOTHIANIDIN")
+ncIMID <- ggplot(honeySample, aes(x = nIMIDACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nIMIDACLOPRID")
+ncTHIAM <- ggplot(honeySample, aes(x = nTHIAMETHOXAM, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIAMETHOXAM")
+ncACET <- ggplot(honeySample, aes(x = nACETAMIPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nACETAMIPRID")
+ncTHIAC <- ggplot(honeySample, aes(x = nACETAMIPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIACLOPRID")
+ncRegion <- ggplot(honeySample, aes(x = Region, y = numcol)) + geom_boxplot() + ggtitle("Number of colonies vs Region")
+```
+
+```{r}
+ncYear
+ncCloth
+ncIMID
+ncTHIAM
+ncACET
+ncTHIAC
+ncRegion
+```
+
+```{r}
+# Transformations
+
+honeySample <- honeySample %>% mutate(logCloth = log(nCLOTHIANIDIN), logIMID = log(nIMIDACLOPRID), logTHIAM = log(nTHIAMETHOXAM),
+                                      logACET = log(ACET), logTHIAC = log(nTHIACLOPRID))
+
+ncLCloth <- ggplot(honeySample, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nCLOTHIANIDIN")
+ncLIMID <- ggplot(honeySample, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nIMIDACLOPRID")
+ncLTHIAM <- ggplot(honeySample, aes(x = logTHIAM, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIAMETHOXAM")
+ncLACET <- ggplot(honeySample, aes(x = logACET, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nACETAMIPRID")
+ncLTHIAC <- ggplot(honeySample, aes(x = logTHIAC, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIACLOPRID")
+```
+
+```{r}
+ncYear
+ncCloth
+ncIMID
+ncTHIAM
+ncACET
+ncTHIAC
+ncRegion
 ```
 
 Yieldpercol ~ all pesticide types (not including nallNeonic) + year + state, and numcol ~ same values
