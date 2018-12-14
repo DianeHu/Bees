@@ -21,8 +21,14 @@ library("cowplot")
 
 ```{r}
 honey <- read.csv("vHoneyNeonic_v02.csv")
-
 honey <- na.omit(honey)
+
+c <- 10 ** (-8)
+
+honey <- honey %>% mutate(clothInd = as.numeric(nCLOTHIANIDIN > 0), imidInd = as.numeric(nIMIDACLOPRID > 0), thiamInd = as.numeric(nACETAMIPRID > 0), acetInd = as.numeric(nACETAMIPRID > 0), thiacInd = as.numeric(nTHIACLOPRID > 0))
+
+honey <- honey %>% mutate(nCLOTHIANIDIN = nCLOTHIANIDIN + c, nIMIDACLOPRID = nIMIDACLOPRID + c, nTHIAMETHOXAM = nTHIAMETHOXAM + c, nACETAMIPRID = nACETAMIPRID + c, nTHIACLOPRID = nTHIACLOPRID + c)
+
 glimpse(honey)
 ```
 
@@ -33,16 +39,15 @@ numObs <- summarize(honey, n = n())
 
 honeySample <- sample_n(honey, as.integer(0.25*numObs))
 
-honeySample <- honeySample %>% mutate(logCloth = log(nCLOTHIANIDIN), logIMID = log(nIMIDACLOPRID), logTHIAM = log(nTHIAMETHOXAM),
-                                      logACET = log(nACETAMIPRID), logTHIAC = log(nTHIACLOPRID))
+honeySample <- honeySample %>% mutate(logCloth = log(nCLOTHIANIDIN), logIMID = log(nIMIDACLOPRID), logTHIAM = log(nTHIAMETHOXAM), logACET = log(nACETAMIPRID), logTHIAC = log(nTHIACLOPRID), logNC = log(numcol))
 
-honeySample$logCloth[which(!is.finite(honeySample$logCloth))] = NA
-honeySample$logIMID[which(!is.finite(honeySample$logIMID))] = NA
-honeySample$logTHIAM[which(!is.finite(honeySample$logTHIAM))] = NA
-honeySample$logACET[which(!is.finite(honeySample$logACET))] = NA
-honeySample$logTHIAC[which(!is.finite(honeySample$logTHIAC))] = NA
+#honeySample$logCloth[which(!is.finite(honeySample$logCloth))] = NA
+#honeySample$logIMID[which(!is.finite(honeySample$logIMID))] = NA
+#honeySample$logTHIAM[which(!is.finite(honeySample$logTHIAM))] = NA
+#honeySample$logACET[which(!is.finite(honeySample$logACET))] = NA
+#honeySample$logTHIAC[which(!is.finite(honeySample$logTHIAC))] = NA
 
-honeySample <- na.omit(honeySample)
+#honeySample <- na.omit(honeySample)
 
 glimpse(honeySample)
 ```
@@ -50,13 +55,34 @@ glimpse(honeySample)
 ```{r}
 # Numcol against everything for exp data analysis
 
+#ncYear <- ggplot(honeySample, aes(x = year, y = numcol)) + geom_point() + geom_line() + ggtitle("Number of Colonies vs Year")
+#ncCloth <- ggplot(honeySample, aes(x = nCLOTHIANIDIN, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nCLOTHIANIDIN")
+#ncIMID <- ggplot(honeySample, aes(x = nIMIDACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nIMIDACLOPRID")
+#ncTHIAM <- ggplot(honeySample, aes(x = nTHIAMETHOXAM, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIAMETHOXAM")
+#ncACET <- ggplot(honeySample, aes(x = nACETAMIPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nACETAMIPRID")
+#ncTHIAC <- ggplot(honeySample, aes(x = nTHIACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIACLOPRID")
+#ncRegion <- ggplot(honeySample, aes(x = Region, y = numcol)) + geom_boxplot() + ggtitle("Number of colonies vs Region")
+
+cl <- honeySample %>% filter(clothInd > 0)
+im <- honeySample %>% filter(imidInd > 0)
+thm <- honeySample %>% filter(thiamInd > 0)
+ac <- honeySample %>% filter(acetInd > 0)
+thc <- honeySample %>% filter(thiacInd > 0)
+
 ncYear <- ggplot(honeySample, aes(x = year, y = numcol)) + geom_point() + geom_line() + ggtitle("Number of Colonies vs Year")
-ncCloth <- ggplot(honeySample, aes(x = nCLOTHIANIDIN, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nCLOTHIANIDIN")
-ncIMID <- ggplot(honeySample, aes(x = nIMIDACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nIMIDACLOPRID")
-ncTHIAM <- ggplot(honeySample, aes(x = nTHIAMETHOXAM, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIAMETHOXAM")
-ncACET <- ggplot(honeySample, aes(x = nACETAMIPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nACETAMIPRID")
-ncTHIAC <- ggplot(honeySample, aes(x = nACETAMIPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIACLOPRID")
+
+ncCloth <- ggplot(cl, aes(x = nCLOTHIANIDIN, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nCLOTHIANIDIN")
+
+ncIMID <- ggplot(im, aes(x = nIMIDACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nIMIDACLOPRID")
+
+ncTHIAM <- ggplot(thm, aes(x = nTHIAMETHOXAM, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIAMETHOXAM")
+
+ncACET <- ggplot(ac, aes(x = nACETAMIPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nACETAMIPRID")
+
+ncTHIAC <- ggplot(thc, aes(x = nTHIACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs nTHIACLOPRID")
+
 ncRegion <- ggplot(honeySample, aes(x = Region, y = numcol)) + geom_boxplot() + ggtitle("Number of colonies vs Region")
+
 ```
 
 ```{r}
@@ -72,11 +98,21 @@ ncRegion
 ```{r}
 # Transformations
 
-ncLCloth <- ggplot(honeySample, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nCLOTHIANIDIN")
-ncLIMID <- ggplot(honeySample, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nIMIDACLOPRID")
-ncLTHIAM <- ggplot(honeySample, aes(x = logTHIAM, y = numcol)) + geom_point() + ggtitle("Number of Colonies Log vs nTHIAMETHOXAM")
-ncLACET <- ggplot(honeySample, aes(x = logACET, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nACETAMIPRID")
-ncLTHIAC <- ggplot(honeySample, aes(x = logTHIAC, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nTHIACLOPRID")
+ncLCloth <- ggplot(cl, aes(x = logCloth, y = logNC)) + geom_point() + ggtitle("Number of Colonies vs Log nCLOTHIANIDIN")
+
+ncLIMID <- ggplot(im, aes(x = logIMID, y = logNC)) + geom_point() + ggtitle("Number of Colonies vs Log nIMIDACLOPRID")
+
+ncLTHIAM <- ggplot(thm, aes(x = logTHIAM, y = logNC)) + geom_point() + ggtitle("Number of Colonies vs Log nTHIAMETHOXAM")
+
+ncLACET <- ggplot(ac, aes(x = logACET, y = logNC)) + geom_point() + ggtitle("Number of Colonies vs Log nACETAMIPRID")
+
+ncLTHIAC <- ggplot(thc, aes(x = logTHIAC, y = logNC)) + geom_point() + ggtitle("Number of Colonies vs Log nTHIACLOPRID")
+
+#ncLCloth <- ggplot(honeySample, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nCLOTHIANIDIN")
+#ncLIMID <- ggplot(honeySample, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nIMIDACLOPRID")
+#ncLTHIAM <- ggplot(honeySample, aes(x = logTHIAM, y = numcol)) + geom_point() + ggtitle("Number of Colonies Log vs nTHIAMETHOXAM")
+#ncLACET <- ggplot(honeySample, aes(x = logACET, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nACETAMIPRID")
+#ncLTHIAC <- ggplot(honeySample, aes(x = logTHIAC, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nTHIACLOPRID")
 ```
 
 ```{r}
@@ -90,18 +126,23 @@ ncLTHIAC
 ```{r}
 cal <- honey %>% filter(StateName == "California")
 
-cal = na.omit(cal)
-
 glimpse(cal)
 ```
 
 ```{r}
+
+ccl <- cal %>% filter(clothInd > 0)
+cim <- cal %>% filter(imidInd > 0)
+cthm <- cal %>% filter(thiamInd > 0)
+cac <- cal %>% filter(acetInd > 0)
+cthc <- cal %>% filter(thiacInd > 0)
+
 cYear <- ggplot(cal, aes(x = year, y = numcol)) + geom_point() + geom_line() + ggtitle("Number of California Colonies vs Year")
-cLCloth <- ggplot(cal, aes(x = nCLOTHIANIDIN, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nCLOTHIANIDIN")
-cLIMID <- ggplot(cal, aes(x = nIMIDACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nIMIDACLOPRID")
-cLTHIAM <- ggplot(cal, aes(x = nTHIAMETHOXAM, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nTHIAMETHOXAM")
-cLACET <- ggplot(cal, aes(x = nACETAMIPRID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nACETAMIPRID")
-cLTHIAC <- ggplot(cal, aes(x = nTHIACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nTHIACLOPRID")
+cLCloth <- ggplot(ccl, aes(x = nCLOTHIANIDIN, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nCLOTHIANIDIN")
+cLIMID <- ggplot(cim, aes(x = nIMIDACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nIMIDACLOPRID")
+cLTHIAM <- ggplot(cthm, aes(x = nTHIAMETHOXAM, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nTHIAMETHOXAM")
+cLACET <- ggplot(cac, aes(x = nACETAMIPRID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nACETAMIPRID")
+cLTHIAC <- ggplot(cthc, aes(x = nTHIACLOPRID, y = numcol)) + geom_point() + ggtitle("Number of California Colonies vs nTHIACLOPRID")
 ```
 
 ```{r}
@@ -120,7 +161,7 @@ glimpse(honeySample)
 ```
 
 ```{r}
-numcolFull <- lm(numcol ~ Region + logCloth + logIMID + logTHIAM + logACET + logTHIAC,data=honeySample)
+numcolFull <- lm(logNC ~ Region + logCloth + logIMID + logTHIAM + logACET + logTHIAC + clothInd + imidInd + thiamInd + acetInd + thiacInd + logCloth*clothInd + logIMID*imidInd + logTHIAM*thiamInd + logACET*acetInd + logTHIAC*thiacInd, data=honeySample)
 kable(tidy(numcolFull))
 ```
 
@@ -130,23 +171,69 @@ ols_step_forward_aic(numcolFull)
 ```
 
 ```{r}
-baseModel <- lm(numcol ~ Region + logTHIAC + logTHIAM + logCloth, data=honeySample)
-interactionsModel <- lm(numcol ~ Region + logTHIAC + logTHIAM + logCloth + Region*logCloth + Region*logTHIAM + Region*logTHIAC, data=honeySample)
-kable(anova(baseModel, interactionsModel), format="html") # no significant interactions
+regionOnly <- lm(logNC ~ Region, data=honeySample)
+cloth <- lm(logNC ~ Region + logCloth + clothInd + clothInd*logCloth, data=honeySample)
+imid <- lm(logNC ~ Region + logIMID + imidInd + imidInd*logIMID, data=honeySample)
+acet <- lm(logNC ~ Region + logACET + acetInd + acetInd*logACET, data=honeySample)
+thiam <- lm(logNC ~ Region + logTHIAM + thiamInd + thiamInd*logTHIAM, data=honeySample)
+thiac <- lm(logNC ~ Region + logTHIAC + thiacInd + thiacInd*logTHIAC, data=honeySample)
+anova(regionOnly, cloth)
+```
+
+```{r}
+anova(regionOnly, imid)
+```
+
+```{r}
+anova(regionOnly, acet)
+```
+
+```{r}
+anova(regionOnly, thiam)
+```
+
+```{r}
+anova(regionOnly, thiac)
+```
+
+```{r}
+baseModel <- lm(logNC ~ Region + logIMID + logACET + logTHIAM + logTHIAC + imidInd + acetInd + thiamInd + thiacInd + imidInd*logIMID + acetInd*logACET + thiamInd*logTHIAM + thiacInd*logTHIAM, data=honeySample)
+
+interactionsModel <- lm(logNC ~ Region + logIMID + logACET + logTHIAM + logTHIAC + imidInd + acetInd + thiamInd + thiacInd + imidInd*logIMID + acetInd*logACET + thiamInd*logTHIAM + thiacInd*logTHIAM + Region*logIMID + Region*logACET + Region*logTHIAC + Region*logTHIAM, data=honeySample)
+
+kable(anova(baseModel, interactionsModel), format="html") # interactions significant
 ```
 
 ```{r}
 glimpse(cal)
 ```
 
-
 ```{r}
-calFullModel <- lm(numcol ~ year + nCLOTHIANIDIN + nIMIDACLOPRID + nTHIAMETHOXAM + nACETAMIPRID + nTHIACLOPRID, data=cal)
-kable(tidy(calFullModel))
+yearOnly <- lm(numcol ~ year, data=cal)
+calCloth <- lm(numcol ~ year + nCLOTHIANIDIN + clothInd + clothInd*nCLOTHIANIDIN, data=cal)
+calImid <- lm(numcol ~ year + nIMIDACLOPRID + imidInd + imidInd*nIMIDACLOPRID, data=cal)
+calThiam <- lm(numcol ~ year + nTHIAMETHOXAM + thiamInd + thiamInd*nTHIAMETHOXAM, data=cal)
+calAcet <- lm(numcol ~ year + nACETAMIPRID + acetInd + acetInd*nACETAMIPRID, data=cal)
+calThiac <- lm(numcol ~ year + nTHIACLOPRID + thiacInd + thiacInd*nTHIACLOPRID, data=cal)
 ```
 
 ```{r}
-ols_step_forward_aic(calFullModel)
+anova(yearOnly, calCloth)
+```
+
+```{r}
+anova(yearOnly, calImid)
+```
+```{r}
+anova(yearOnly, calThiam)
+```
+
+```{r}
+anova(yearOnly, calAcet)
+```
+
+```{r}
+anova(yearOnly, calThiac)
 ```
 
 ```{r}
@@ -154,29 +241,29 @@ pacf(cal$nTHIACLOPRID)
 pacf(cal$nCLOTHIANIDIN)
 ```
 
-
 ```{r}
-calBase <- lm(numcol ~ year + nTHIACLOPRID + nCLOTHIANIDIN, data=cal)
-calInter <- lm(numcol ~ year + nTHIACLOPRID + nCLOTHIANIDIN + year*nTHIACLOPRID + year*nCLOTHIANIDIN, data=cal)
-kable(anova(calBase, calInter), format="html") # interactions not significant
+calBase <- lm(numcol ~ year, data=cal)
 ```
 
 # Assumptions
 
+```{r}
+
+tidy(interactionsModel)
+```
+
 # Model 1
 ```{r}
-honeySample <- honeySample %>% mutate(Residuals = resid(baseModel), Predicted = predict(baseModel))
-
-# Region + logTHIAC + logTHIAM + logCloth
+honeySample <- honeySample %>% mutate(Residuals = resid(interactionsModel), Predicted = predict(interactionsModel))
 
 ggplot(data=honeySample,aes(x=Region,y=Residuals)) + geom_point() + 
   geom_hline(yintercept=0,color="red") + 
    labs(title="Residuals vs. Region") + 
   theme(plot.title = element_text(hjust=0.5))
 
-ggplot(data=honeySample,aes(x=logTHIAC,y=Residuals)) + geom_point() + 
+ggplot(data=honeySample,aes(x=logIMID*imidInd,y=Residuals)) + geom_point() + 
   geom_hline(yintercept=0,color="red") + 
-   labs(title="Residuals vs. logTHIAC") + 
+   labs(title="Residuals vs. logIMID*indicator") + 
   theme(plot.title = element_text(hjust=0.5))
 
 ggplot(data=honeySample,aes(x=Predicted,y=Residuals)) + geom_point() + 
@@ -184,14 +271,19 @@ ggplot(data=honeySample,aes(x=Predicted,y=Residuals)) + geom_point() +
    labs(title="Residuals vs. Predicted") + 
   theme(plot.title = element_text(hjust=0.5))
 
-ggplot(data=honeySample,aes(x=logTHIAM,y=Residuals)) + geom_point() + 
+ggplot(data=honeySample,aes(x=logACET*acetInd,y=Residuals)) + geom_point() + 
   geom_hline(yintercept=0,color="red") + 
-   labs(title="Residuals vs. logTHIAM") + 
+   labs(title="Residuals vs. logACET*indicator") + 
   theme(plot.title = element_text(hjust=0.5))
 
-ggplot(data=honeySample,aes(x=logCloth,y=Residuals)) + geom_point() + 
+ggplot(data=honeySample,aes(x=logTHIAM*thiamInd,y=Residuals)) + geom_point() + 
   geom_hline(yintercept=0,color="red") + 
-   labs(title="Residuals vs. logCloth") + 
+   labs(title="Residuals vs. logTHIAM*indicator") + 
+  theme(plot.title = element_text(hjust=0.5))
+
+ggplot(data=honeySample,aes(x=logTHIAC*thiacInd,y=Residuals)) + geom_point() + 
+  geom_hline(yintercept=0,color="red") + 
+   labs(title="Residuals vs. logTHIAC*indicator") + 
   theme(plot.title = element_text(hjust=0.5))
 
 ggplot(data=honeySample, aes(sample=Residuals)) + stat_qq() + stat_qq_line() + 
@@ -201,9 +293,9 @@ ggplot(data=honeySample, aes(sample=Residuals)) + stat_qq() + stat_qq_line() +
 
 ```{r}
 honeySample <- honeySample %>%
-  mutate(leverage = hatvalues(baseModel), 
-         cooks = cooks.distance(baseModel),
-         stand.resid = rstandard(baseModel), 
+  mutate(leverage = hatvalues(interactionsModel), 
+         cooks = cooks.distance(interactionsModel),
+         stand.resid = rstandard(interactionsModel), 
          obs.num = row_number())
 
 ggplot(data=honeySample, aes(x=obs.num,y=leverage)) + 
@@ -220,12 +312,16 @@ ggplot(data=honeySample, aes(x=obs.num,y=cooks)) +
 ```
 
 ```{r}
-library(car)
-kable(tidy(vif(baseModel)))
+interactionsModel <- lm(logNC ~ Region + logIMID + logACET + logTHIAM + logTHIAC + imidInd + acetInd + thiamInd + thiacInd + imidInd*logIMID + acetInd*logACET + thiamInd*logTHIAM + thiacInd*logTHIAM + Region*logIMID + Region*logACET + Region*logTHIAC + Region*logTHIAM, data=honeySample)
 ```
 
 ```{r}
-kable(glance(baseModel))
+library(car)
+kable(tidy(vif(interactionsModel)))
+```
+
+```{r}
+kable(glance(interactionModel))
 ```
 
 # Model 2
@@ -288,7 +384,11 @@ kable(glance(calBase))
 ```
 
 ```{r}
-ggplot(data=honey, aes(x=year, y=nAllNeonic)) + geom_point()
+ggplot(data=honey, aes(x=year, y=nAllNeonic)) + geom_point() + ggtitle("All Pesticides vs Year")
+```
+
+```{r}
+ggplot(data=honey, aes(x=year, y=numcol)) + geom_point() + ggtitle("Number of Colonies vs Year")
 ```
 
 ?? Do we need to standardize year?
