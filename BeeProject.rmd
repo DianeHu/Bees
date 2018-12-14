@@ -98,15 +98,15 @@ ncRegion
 ```{r}
 # Transformations
 
-ncLCloth <- ggplot(cl, aes(x = logCloth, y = logNC)) + geom_point() + ggtitle("Number of Colonies vs Log nCLOTHIANIDIN")
+ncLCloth <- ggplot(cl, aes(x = logCloth, y = logNC)) + geom_point() + ggtitle("Logged Number of Colonies vs Log nCLOTHIANIDIN")
 
-ncLIMID <- ggplot(im, aes(x = logIMID, y = logNC)) + geom_point() + ggtitle("Number of Colonies vs Log nIMIDACLOPRID")
+ncLIMID <- ggplot(im, aes(x = logIMID, y = logNC)) + geom_point() + ggtitle("Logged Number of Colonies vs Log nIMIDACLOPRID")
 
-ncLTHIAM <- ggplot(thm, aes(x = logTHIAM, y = logNC)) + geom_point() + ggtitle("Number of Colonies vs Log nTHIAMETHOXAM")
+ncLTHIAM <- ggplot(thm, aes(x = logTHIAM, y = logNC)) + geom_point() + ggtitle("Logged Number of Colonies vs Log nTHIAMETHOXAM")
 
-ncLACET <- ggplot(ac, aes(x = logACET, y = logNC)) + geom_point() + ggtitle("Number of Colonies vs Log nACETAMIPRID")
+ncLACET <- ggplot(ac, aes(x = logACET, y = logNC)) + geom_point() + ggtitle("Logged Number of Colonies vs Log nACETAMIPRID")
 
-ncLTHIAC <- ggplot(thc, aes(x = logTHIAC, y = logNC)) + geom_point() + ggtitle("Number of Colonies vs Log nTHIACLOPRID")
+ncLTHIAC <- ggplot(thc, aes(x = logTHIAC, y = logNC)) + geom_point() + ggtitle("Logged Number of Colonies vs Log nTHIACLOPRID")
 
 #ncLCloth <- ggplot(honeySample, aes(x = logCloth, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nCLOTHIANIDIN")
 #ncLIMID <- ggplot(honeySample, aes(x = logIMID, y = numcol)) + geom_point() + ggtitle("Number of Colonies vs Log nIMIDACLOPRID")
@@ -245,7 +245,7 @@ calBase <- lm(numcol ~ year, data=cal)
 
 ```{r}
 
-tidy(interactionsModel)
+kable(tidy(interactionsModel))
 ```
 
 # Model 1
