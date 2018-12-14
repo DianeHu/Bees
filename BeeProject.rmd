@@ -70,7 +70,7 @@ glimpse(honey)
 ```
 
 
-## Graphs for yield per colony
+## Graphs for yield per colony 
 ```{r}
 yc_nACETAMIPRID <- ggplot(honey, aes(x=nACETAMIPRID, y=yieldpercol)) + geom_point() + 
   ggtitle("Yield per Colony v. nACETAMIPRID")
@@ -97,11 +97,11 @@ yc_reigon
 
 
 ```{r}
-yc_lognACETAMIPRID <- ggplot(honey, aes(x=in_nACETAMIPRID*nACETAMIPRID, y=yieldpercol)) + geom_point() +ggtitle("Yield per Colony v. in_nACETAMIPRID*nACETAMIPRID")
-yc_lognCLOTHIANIDIN <- ggplot(honey, aes(x=in_nCLOTHIANIDIN*nCLOTHIANIDIN, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. in_nCLOTHIANIDIN*nCLOTHIANIDIN")
-yc_lognIMIDACLOPRID <- ggplot(honey, aes(x=in_nIMIDACLOPRID*nIMIDACLOPRID, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. in_nIMIDACLOPRID*nIMIDACLOPRID")
-yc_lognTHIACLOPRID <- ggplot(honey, aes(x=in_nTHIACLOPRID*nTHIACLOPRID, y=yieldpercol))  + geom_point() + ggtitle("Yield per Colony v. in_nTHIACLOPRID*nTHIACLOPRID")
-yc_lognTHIAMETHOXAM <- ggplot(honey, aes(x= in_nTHIAMETHOXAM*nTHIAMETHOXAM, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. in_nTHIAMETHOXAM*nTHIAMETHOXAM")
+yc_lognACETAMIPRID <- ggplot(honey, aes(x=in_nACETAMIPRID*nACETAMIPRID, y=yieldpercol)) + geom_point() +ggtitle("Yield per Colony v. in_nACETAMIPRID")
+yc_lognCLOTHIANIDIN <- ggplot(honey, aes(x=in_nCLOTHIANIDIN*nCLOTHIANIDIN, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. in_nCLOTHIANIDIN")
+yc_lognIMIDACLOPRID <- ggplot(honey, aes(x=in_nIMIDACLOPRID*nIMIDACLOPRID, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. in_nIMIDACLOPRID")
+yc_lognTHIACLOPRID <- ggplot(honey, aes(x=in_nTHIACLOPRID*nTHIACLOPRID, y=yieldpercol))  + geom_point() + ggtitle("Yield per Colony v. in_nTHIACLOPRID")
+yc_lognTHIAMETHOXAM <- ggplot(honey, aes(x= in_nTHIAMETHOXAM*nTHIAMETHOXAM, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. in_nTHIAMETHOXAM")
 
 #show plots
 yc_lognACETAMIPRID
@@ -114,8 +114,7 @@ yc_lognTHIAMETHOXAM
 indicator (only 1s) * log amount
 
 ```{r}
-#plot 1 inficator 
-#filter zeros for 
+#print these
 
 #get samples with indicator 1
 in_1 <- honey %>% filter(in_nACETAMIPRID>0)
@@ -124,11 +123,11 @@ in_3 <- honey %>% filter(in_nIMIDACLOPRID>0)
 in_4 <- honey %>% filter(in_nTHIACLOPRID>0)
 in_5 <- honey %>% filter(in_nTHIAMETHOXAM>0) 
 
-yc_lognACETAMIPRID <- ggplot(in_1, aes(x=lognACETAMIPRID, y=yieldpercol)) + geom_point() +ggtitle("Yield per Colony v. lognACETAMIPRID(Indicator)")
-yc_lognCLOTHIANIDIN <- ggplot(in_2, aes(x=lognCLOTHIANIDIN, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. lognCLOTHIANIDIN(Indicator)")
-yc_lognIMIDACLOPRID <- ggplot(in_3, aes(x=lognIMIDACLOPRID, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. lognIMIDACLOPRID(Indicator)")
-yc_lognTHIACLOPRID <- ggplot(in_4, aes(x=lognTHIACLOPRID, y=yieldpercol))  + geom_point() + ggtitle("Yield per Colony v. lognTHIACLOPRID(Indicator)")
-yc_lognTHIAMETHOXAM <- ggplot(in_5, aes(x=lognTHIAMETHOXAM, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. lognTHIAMETHOXAM(Indicator)")
+yc_lognACETAMIPRID <- ggplot(in_1, aes(x=lognACETAMIPRID, y=yieldpercol)) + geom_point() +ggtitle("Yield per Colony v. lognACETAMIPRID")
+yc_lognCLOTHIANIDIN <- ggplot(in_2, aes(x=lognCLOTHIANIDIN, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. lognCLOTHIANIDIN")
+yc_lognIMIDACLOPRID <- ggplot(in_3, aes(x=lognIMIDACLOPRID, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. lognIMIDACLOPRID")
+yc_lognTHIACLOPRID <- ggplot(in_4, aes(x=lognTHIACLOPRID, y=yieldpercol))  + geom_point() + ggtitle("Yield per Colony v. lognTHIACLOPRID")
+yc_lognTHIAMETHOXAM <- ggplot(in_5, aes(x=lognTHIAMETHOXAM, y=yieldpercol)) + geom_point() + ggtitle("Yield per Colony v. lognTHIAMETHOXAM")
 
 #show plots
 yc_lognACETAMIPRID
@@ -153,7 +152,6 @@ glimpse(honey)
 glimpse(ca)
 ```
 
-# TODO redo this later !!!!
 ```{r}
 
 ca <- vHoneyNeonic_v02 %>% filter(StateName == "California")
@@ -177,6 +175,8 @@ anova(year.only,lm.THIAMETHOXAM.ca)
 As we see, none of the pestisides are important. We continue with year.only model
 
 ```{r}
+#print these
+
 ycca_nACETAMIPRID <- ggplot(ca, aes(x=nACETAMIPRID, y=yieldpercol)) + geom_point() +ggtitle("CA: Yield per Colony v. nACETAMIPRID")
 ycca_nCLOTHIANIDIN <- ggplot(ca, aes(x=nCLOTHIANIDIN, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. nCLOTHIANIDIN")
 ycca_nIMIDACLOPRID <- ggplot(ca, aes(x=nIMIDACLOPRID, y=yieldpercol)) + geom_point() + ggtitle("CA: Yield per Colony v. nIMIDACLOPRID")
