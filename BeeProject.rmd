@@ -236,10 +236,6 @@ anova(yearOnly, calAcet)
 anova(yearOnly, calThiac)
 ```
 
-```{r}
-pacf(cal$nTHIACLOPRID)
-pacf(cal$nCLOTHIANIDIN)
-```
 
 ```{r}
 calBase <- lm(numcol ~ year, data=cal)
@@ -254,6 +250,8 @@ tidy(interactionsModel)
 
 # Model 1
 ```{r}
+interactionsModel <- lm(logNC ~ Region + logIMID + logACET + logTHIAM + logTHIAC + Region*logIMID + Region*logACET + Region*logTHIAC + Region*logTHIAM +thiamInd + thiamInd*logTHIAM + thiacInd + thiacInd*logTHIAM, data=honeySample)
+
 honeySample <- honeySample %>% mutate(Residuals = resid(interactionsModel), Predicted = predict(interactionsModel))
 
 ggplot(data=honeySample,aes(x=Region,y=Residuals)) + geom_point() + 
@@ -312,8 +310,10 @@ ggplot(data=honeySample, aes(x=obs.num,y=cooks)) +
 ```
 
 ```{r}
-interactionsModel <- lm(logNC ~ Region + logIMID + logACET + logTHIAM + logTHIAC + imidInd + acetInd + thiamInd + thiacInd + imidInd*logIMID + acetInd*logACET + thiamInd*logTHIAM + thiacInd*logTHIAM + Region*logIMID + Region*logACET + Region*logTHIAC + Region*logTHIAM, data=honeySample)
+interactionsModel <- lm(logNC ~ Region + logIMID + logACET + logTHIAM + logTHIAC + Region*logIMID + Region*logACET + Region*logTHIAC + Region*logTHIAM +thiamInd + thiamInd*logTHIAM + thiacInd + thiacInd*logTHIAM, data=honeySample)
 ```
+
+imid and acet had perfectly multicollinear stuff, removed
 
 ```{r}
 library(car)
@@ -321,7 +321,7 @@ kable(tidy(vif(interactionsModel)))
 ```
 
 ```{r}
-kable(glance(interactionModel))
+kable(glance(interactionsModel))
 ```
 
 # Model 2
@@ -334,16 +334,6 @@ cal <- cal %>% mutate(Residuals = resid(calBase), Predicted = predict(calBase))
 ggplot(data=cal,aes(x=year,y=Residuals)) + geom_point() + 
   geom_hline(yintercept=0,color="red") + 
    labs(title="Residuals vs. Year") + 
-  theme(plot.title = element_text(hjust=0.5))
-
-ggplot(data=cal,aes(x=nTHIACLOPRID,y=Residuals)) + geom_point() + 
-  geom_hline(yintercept=0,color="red") + 
-   labs(title="Residuals vs. nTHIACLOPRID") + 
-  theme(plot.title = element_text(hjust=0.5))
-
-ggplot(data=cal,aes(x=nCLOTHIANIDIN,y=Residuals)) + geom_point() + 
-  geom_hline(yintercept=0,color="red") + 
-   labs(title="Residuals vs. nCLOTHIANIDIN") + 
   theme(plot.title = element_text(hjust=0.5))
 
 ggplot(data=cal,aes(x=Predicted,y=Residuals)) + geom_point() + 
@@ -376,10 +366,6 @@ ggplot(data=cal, aes(x=obs.num,y=cooks)) +
 ```
 
 ```{r}
-kable(tidy(vif(calBase)))
-```
-
-```{r}
 kable(glance(calBase))
 ```
 
@@ -389,6 +375,23 @@ ggplot(data=honey, aes(x=year, y=nAllNeonic)) + geom_point() + ggtitle("All Pest
 
 ```{r}
 ggplot(data=honey, aes(x=year, y=numcol)) + geom_point() + ggtitle("Number of Colonies vs Year")
+```
+
+```{r}
+tidy(calBase)
+```
+
+```{r}
+dat = data.frame(year = c(2020, 2025, 2030, 2035, 2040, 2045))
+predict.lm(calBase, newdata=dat, interval="prediction")
+```
+
+```{r}
+dat = data.frame(logIMID = c(log(1000), log(5000), log(10000)), Region = c('Midwest', 'Midwest', 'Midwest'), logACET = c(0,0,0), logTHIAM = c(0,0,0), logTHIAC = c(0,0,0), thiamInd = c(0,0,0), thiacInd = c(0,0,0), acetInd = c(0,0,0), imidInd = c(1,1,1))
+exp(predict.lm(interactionsModel, newdata = dat,interval="prediction"))
+```
+
+```{r}
 ```
 
 ?? Do we need to standardize year?
